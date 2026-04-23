@@ -22,7 +22,7 @@ const serial = async (
             user: 'user_insert',
             password: 'Urubu100@',
             database: 'PI',
-            port: 3306
+            port: 3307
         }
     ).promise();
 
@@ -60,7 +60,7 @@ const serial = async (
 
             // este insert irá inserir os dados na tabela "medida"
             await poolBancoDados.execute(
-                'INSERT INTO leituraGas (PPM) VALUES (?)',
+                'INSERT INTO registro (fkSensor, PPM) VALUES (1, ?)',
                 [sensorGas]
             );
             console.log("valores inseridos no banco: ", sensorGas);
@@ -94,7 +94,7 @@ const servidor = (
     });
 
     // define os endpoints da API para cada tipo de sensor
-    app.get('/sensores/digital', (_, response) => {
+    app.get('/sensores/gas', (_, response) => {
         return response.json(valoresSensorGas);
     });
 }

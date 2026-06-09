@@ -18,14 +18,14 @@ const serial = async (
     // conexão com o banco de dados MySQL
     let poolBancoDados = mysql.createPool(
         {
-            host: 'localhost',
-            user: 'user_insert',
-            password: 'Urubu100@',
+            host: '10.18.32.170',
+            user: 'aluno',
+            password: 'Sptech#2024',
             database: 'PI',
             port: 3307
         }
     ).promise();
-    
+
     // lista as portas seriais disponíveis e procura pelo Arduino
     const portas = await serialport.SerialPort.list();
     const portaArduino = portas.find((porta) => porta.vendorId == 2341 && porta.productId == 43);
@@ -52,7 +52,7 @@ const serial = async (
 
         // const valores = data.split(';');
         let sensorGas = parseFloat(data);
-        
+
         // armazena os valores dos sensores nos arrays correspondentes
         valoresSensorGas.push(sensorGas);
 
@@ -61,12 +61,13 @@ const serial = async (
 
             // este insert irá inserir os dados na tabela "registro"
             for (let i = 0; i < 16; i++) {
-                sensorGas = (sensorGas * (Math.random() * (25 - 10) + 10)).toFixed(1);
+		let valor_calculado = Number((sensorGas * (Math.random() * (1600 - 50) + 50)).toFixed(2));
+
 
                 await poolBancoDados.execute(
                 'INSERT INTO registro (fkSensor, PPM) VALUES (?, ?)',
-                [Number(i + 1)],[sensorGas]    
-                );    
+                [i + 1, valor_calculado]
+                );
             }
             console.log("valores inseridos no banco: ", sensorGas);
 

@@ -1,4 +1,4 @@
-// importa os bibliotecas necessários
+// importa as bibliotecas necessários
 const serialport = require('serialport');
 const express = require('express');
 const mysql = require('mysql2');
@@ -25,7 +25,7 @@ const serial = async (
             port: 3307
         }
     ).promise();
-
+    
     // lista as portas seriais disponíveis e procura pelo Arduino
     const portas = await serialport.SerialPort.list();
     const portaArduino = portas.find((porta) => porta.vendorId == 2341 && porta.productId == 43);
@@ -49,20 +49,25 @@ const serial = async (
     // processa os dados recebidos do Arduino
     arduino.pipe(new serialport.ReadlineParser({ delimiter: '\r\n' })).on('data', async (data) => {
         console.log(data);
-        const valores = data.split(';');
-        const sensorGas = parseFloat(valores[0]);
 
+        // const valores = data.split(';');
+        let sensorGas = parseFloat(data);
+        
         // armazena os valores dos sensores nos arrays correspondentes
         valoresSensorGas.push(sensorGas);
 
         // insere os dados no banco de dados (se habilitado)
         if (HABILITAR_OPERACAO_INSERIR) {
 
-            // este insert irá inserir os dados na tabela "medida"
-            await poolBancoDados.execute(
-                'INSERT INTO registro (fkSensor, PPM) VALUES (1, ?)',
-                [sensorGas]
-            );
+            // este insert irá inserir os dados na tabela "registro"
+            for (let i = 0; i < 16; i++) {
+                sensorGas = (sensorGas * (Math.random() * (25 - 10) + 10)).toFixed(1);
+
+                await poolBancoDados.execute(
+                'INSERT INTO registro (fkSensor, PPM) VALUES (?, ?)',
+                [Number(i + 1)],[sensorGas]    
+                );    
+            }
             console.log("valores inseridos no banco: ", sensorGas);
 
         }

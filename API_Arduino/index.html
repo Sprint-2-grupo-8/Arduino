@@ -33,7 +33,7 @@
                     y: {
                         title: {
                             display: true,
-                            text: '(0-100%)'
+                            text: '(0-10000)'
                         },
                         beginAtZero: true
                     }
@@ -74,7 +74,7 @@
         }
 
         setInterval(() => {
-            obterDados(sensorGas, 'digital');
+            obterDados(sensorGas, 'gas');
         }, 1000);
 
     </script>
